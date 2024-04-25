@@ -14,6 +14,8 @@ public partial class MainView : UserControl
     private TextBox _outputTextBoxNetwork;
     private TextBox _outputTextBoxRepair;
 
+    private bool hasErrorOccured;
+
     public MainView()
     {
         InitializeComponent();
@@ -26,6 +28,7 @@ public partial class MainView : UserControl
         // setup progress bar and console 
         _outputTextBoxNetwork.Text = "";
         NetworkAndDnsProgressBar.Opacity = 100;
+        NetworkAndDnsProgress.Content = "Running...";
 
         // run commands
         await ExecuteCommand("ipconfig /flushdns", _outputTextBoxNetwork, BorderNetworkAndDnsProgress, NetworkAndDnsProgress);
@@ -43,9 +46,13 @@ public partial class MainView : UserControl
         await ExecuteCommand("netsh winsock reset", _outputTextBoxNetwork, BorderNetworkAndDnsProgress, NetworkAndDnsProgress);
         NetworkAndDnsProgressBar.Value = 100;
 
-        // update UI to reflect all commands being run successfully
-        BorderNetworkAndDnsProgress.Background = Brushes.Green;
-        NetworkAndDnsProgress.Content = "Done!";
+        // if no errors has occured...
+        if (hasErrorOccured == false)
+        {
+            // ... update UI to reflect all commands being run successfully
+            BorderNetworkAndDnsProgress.Background = Brushes.Green;
+            NetworkAndDnsProgress.Content = "Done!";
+        }
     }
 
     private async void RepairWindowsImage(object source, RoutedEventArgs args)
@@ -53,17 +60,22 @@ public partial class MainView : UserControl
         // setup progress bar and console 
         _outputTextBoxRepair.Text = "";
         RepairWindowsImageProgressBar.Opacity = 100;
+        WindowsImageRepairProgress.Content = "Running...";
 
         // run commands
         await ExecuteCommand("sfc /scannow", _outputTextBoxRepair, BorderWindowsImageRepairProgress, WindowsImageRepairProgress);
         RepairWindowsImageProgressBar.Value= 50;
-
+        
         await ExecuteCommand("DISM /Online /Cleanup-Image /RestoreHealth", _outputTextBoxRepair, BorderWindowsImageRepairProgress, WindowsImageRepairProgress);
         RepairWindowsImageProgressBar.Value = 100;
 
-        // update UI to reflect all commands being run successfully
-        BorderWindowsImageRepairProgress.Background = Brushes.Green;
-        WindowsImageRepairProgress.Content = "Done!";
+        // if no errors has occured...
+        if (hasErrorOccured == false)
+        {
+            // ... update UI to reflect all commands being run successfully
+            BorderWindowsImageRepairProgress.Background = Brushes.Green;
+            WindowsImageRepairProgress.Content = "Done!";
+        }
     }
 
     // command to run CMD commands
@@ -108,6 +120,8 @@ public partial class MainView : UserControl
                             label.Content = "Error!";
                             _outputTextBox.Text += "You must run this program as an administrator.";
                         });
+
+                        hasErrorOccured = true;
                     }
                     else
                     {
@@ -125,22 +139,26 @@ public partial class MainView : UserControl
             // was the command successful?
             if (process.ExitCode == 0)
             {
-                Dispatcher.UIThread.InvokeAsync(() =>
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     _outputTextBox.Text += $"###########################################################\n" +
                                            $"\t\t\t\t\t\t\t\t\t\tProcess exited successfully!\n" +
                                            $"###########################################################\n\n";
                 });
+                
+                hasErrorOccured = false;
             }
             else
             {
-                Dispatcher.UIThread.InvokeAsync(() =>
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     border.Background = Brushes.Red;
                     label.Content = "Error!";
                     _outputTextBox.Text += $"Error executing the command: '{command}'\n" +
                                            $"(Exit code: {process.ExitCode})\n\n";
                 });
+
+                hasErrorOccured = true;
             }
         }
         catch (Exception ex)
