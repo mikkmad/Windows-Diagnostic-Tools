@@ -6,7 +6,7 @@ Functionality wise; it works as intended. Some errors might not be easily readab
 
 It should work on all versions of Windows having the `DISM` and `ipconfig` toolsets. Only tested on `Windows 11, build 22631.3527`.
 
-It is built using the Avalonia UI framework.
+It is built using the [Avalonia UI](https://www.avaloniaui.net/) framework.
 
 ## Use-case
 
