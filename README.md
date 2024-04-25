@@ -25,3 +25,7 @@ Fear not! Instead of wasting time away searching for the what-was-the-name-again
 
 ## Disclaimer
 This tool is not guaranteed to fix your issues, merely to provide an easy way to run the often-recommended actions, if you're facing Network or lazy-Windows symptoms.
+
+## Image
+
+![Image of UI](./doc/screenshots/1.png)
