@@ -1,0 +1,183 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="760"
+             x:Class="Windows_Diagnostic_Tools.Views.MainView">
+
+	<!-- Align our items in a Stack Panel (think of a stack of plates) -->
+    <StackPanel Background="DarkSlateGray"
+                Opacity="60">
+
+		<!-- Network and DNS -->
+        <Border Background="SteelBlue"
+                CornerRadius="20"
+                Margin="10">
+            <StackPanel>
+
+                <!-- Network and DNS -->
+                <Border Margin="20 20 20 0"
+                        CornerRadius="10"
+                        Background="DodgerBlue">
+
+
+                    <TextBlock FontSize="24"
+                               Margin="5"
+                               HorizontalAlignment="Center"
+                               Text="Network and DNS">
+                    </TextBlock>
+                </Border>
+
+                <!-- Button -->
+
+                <Border>
+
+					<Grid Margin="10 10 0 10"
+                          ColumnDefinitions="190, 200, 200"
+                          RowDefinitions="Auto, Auto, Auto">
+
+						<Label Grid.Column="0"
+                               Grid.Row="0"
+                               HorizontalAlignment="Center"
+                               Margin="10"
+                               FontWeight="ExtraBlack"
+                               FontSize="14">Network Issues</Label>
+
+						<Button Grid.Column="1"
+                                Grid.Row="0"
+                                HorizontalAlignment="Stretch"
+                                VerticalContentAlignment="Center"
+                                TextBlock.TextAlignment="Center"
+                                Height="40"
+                                Click="ResetNetworkAndDns"
+                                Background="DodgerBlue"
+                                FontWeight="Bold"
+                                Opacity="1">Reset Network Adapter</Button>
+
+						<Border Name="BorderNetworkAndDnsProgress"
+                                Grid.Column="2"
+                                Grid.Row="0"
+                                Margin="30 0 50 0"
+                                CornerRadius="10"
+                                Background="DimGray"
+                                HorizontalAlignment="Stretch">
+
+							<Label Name="NetworkAndDnsProgress" Margin="10"
+                                   FontSize="15"
+                                   TextBlock.TextAlignment="Center">Awaiting...</Label>
+						</Border>
+					</Grid>
+                </Border>
+
+                <!-- TextBox -->
+                <TextBox Name="NetworkAndDnsOutputTextbox" 
+                         Margin="20 0 20 10"
+                         Height="200"
+                         TextWrapping="Wrap"
+                         HorizontalAlignment="Stretch"
+                         VerticalAlignment="Center" 
+                         IsReadOnly="True">
+                    <!-- Console Output from the commands will be displayed here -->
+                    Output from commands will be shown here...
+                </TextBox>
+
+				<ProgressBar Name="NetworkAndDnsProgressBar"
+                             Margin="20 0 20 13"
+                             Minimum="0"
+                             Maximum="100"
+                             Value="0"
+                             ShowProgressText="True"
+                             Opacity="0"
+                             CornerRadius="10"
+                             Foreground="DodgerBlue"/>
+            </StackPanel>
+        </Border>
+
+		<!-- Repair Windows Image -->
+		<Border Background="SteelBlue"
+                CornerRadius="20"
+                Margin="10">
+            <StackPanel>
+
+                <!-- Repair Windows Image -->
+                <Border Margin="20 20 20 0"
+                        CornerRadius="10"
+                        Background="DodgerBlue">
+
+
+                    <TextBlock FontSize="24"
+                               Margin="5"
+                               HorizontalAlignment="Center"
+                               Text="Windows Image">
+                    </TextBlock>
+                </Border>
+
+                <!-- Button -->
+
+                <Border>
+
+                    <Grid Margin="10 10 0 10"
+                          ColumnDefinitions="190, 200, 200"
+                          RowDefinitions="Auto, Auto, Auto">
+
+                        <Label Grid.Column="0"
+                               Grid.Row="0"
+                               HorizontalAlignment="Center"
+                               Margin="10"
+                               FontWeight="ExtraBlack"
+                               FontSize="14">Repair Windows Image</Label>
+
+                        <Button Grid.Column="1"
+                                Grid.Row="0"
+                                HorizontalAlignment="Stretch"
+                                VerticalContentAlignment="Center"
+                                TextBlock.TextAlignment="Center"
+                                Height="40"
+                                Click="RepairWindowsImage"
+                                Background="DodgerBlue"
+                                FontWeight="Bold"
+                                Opacity="1">Fix Image Issues</Button>
+
+                        <Border Name="BorderWindowsImageRepairProgress"
+                                Grid.Column="2"
+                                Grid.Row="0"
+                                Margin="30 0 50 0"
+                                CornerRadius="10"
+                                Background="DimGray"
+                                HorizontalAlignment="Stretch">
+
+                            <Label Name="WindowsImageRepairProgress" 
+                                   Margin="10"
+                                   FontSize="15"
+                                   TextBlock.TextAlignment="Center">Awaiting...</Label>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- TextBox -->
+                <TextBox Name="RepairWindowsImageOutputTextbox"
+                         Margin="20 0 20 10"
+                         Height="200"
+                         TextWrapping="Wrap"
+                         HorizontalAlignment="Stretch"
+                         VerticalAlignment="Center"
+                         IsReadOnly="True">
+					<!-- Console Output from the commands will be displayed here -->
+                    Output from commands will be shown here...
+                </TextBox>
+
+                <ProgressBar Name="RepairWindowsImageProgressBar" 
+                             Margin="20 0 20 13"
+                             Minimum="0"
+                             Maximum="100"
+                             Value="0"
+                             ShowProgressText="True"
+                             Opacity="0"
+                             CornerRadius="10"
+                             Foreground="DodgerBlue"/>
+            </StackPanel>
+        </Border>
+        
+    </StackPanel>
+</UserControl>
+
