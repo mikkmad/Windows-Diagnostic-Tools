@@ -11,20 +11,19 @@ on:
 # what to do
 jobs:
   build:
-    strategy:
-      matrix:
-        configuration: [Release]
-        platform: [x64]
-
     runs-on: windows-latest
- 
+    
+    # values for the build
+    env:
+      Configuration: Release
+      RID: win-x64
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
-    # install .NET 8.0 (project targets .NET 8.0)
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
@@ -33,23 +32,17 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.1.3
 
-      # restore the application dependencies
+    # restore the project
     - name: Restore the project
-      run: msbuild "Windows Diagnostic Tools.csproj" /t:Restore /p:Configuration=$env:Configuration /p:Platform=$env:Platform
-      env:
-        Configuration: ${{ matrix.configuration }}
-        Platform: ${{ matrix.platform }}
+      run: msbuild "Windows Diagnostic Tools.csproj" /t:Restore /p:Configuration=$env:Configuration /p:RuntimeIdentifier=$env:RID
 
-    # create the app by building the project file with msbuild
+    # create the app (self-contained)
     - name: Create the app (Self-Contained)
-      run: msbuild "Windows Diagnostic Tools.csproj" /t:Publish /p:Configuration=$env:Configuration /p:Platform=$env:Platform /p:WindowsAppSDKSelfContained=true /p:WindowsPackageType=None /p:EnableMsixTooling=true /p:PublishDir=./publish/${{ matrix.platform }}/
-      env:
-        Configuration: ${{ matrix.configuration }}
-        Platform: ${{ matrix.platform }}
+      run: msbuild "Windows Diagnostic Tools.csproj" /t:Publish /p:Configuration=$env:Configuration /p:RuntimeIdentifier=$env:RID /p:WindowsAppSDKSelfContained=true /p:WindowsPackageType=None /p:EnableMsixTooling=true /p:PublishDir=./publish/$env:RID/
 
-    # upload it
+    # upload the app
     - name: Upload app
       uses: actions/upload-artifact@v4
       with:
-        name: Unpackaged-EXE-${{ matrix.platform }}
-        path: ./publish/${{ matrix.platform }}/
+        name: Unpackaged-EXE-x64
+        path: ./publish/win-x64/
