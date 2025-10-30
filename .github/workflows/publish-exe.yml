@@ -42,7 +42,7 @@ jobs:
 
     # create the app by building the project file with msbuild
     - name: Create the app (Self-Contained)
-      run: msbuild "Windows Diagnostic Tools.csproj" /t:Publish /p:Configuration=$env:Configuration /p:Platform=$env:Platform /p:WindowsAppSDKSelfContained=true /p:WindowsPackageType=None /p:PublishDir=./publish/${{ matrix.platform }}/
+      run: msbuild "Windows Diagnostic Tools.csproj" /t:Publish /p:Configuration=$env:Configuration /p:Platform=$env:Platform /p:WindowsAppSDKSelfContained=true /p:WindowsPackageType=None /p:EnableMsixTooling=true /p:PublishDir=./publish/${{ matrix.platform }}/
       env:
         Configuration: ${{ matrix.configuration }}
         Platform: ${{ matrix.platform }}
