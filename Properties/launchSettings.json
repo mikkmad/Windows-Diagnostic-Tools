@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Windows Diagnostic Tools-rewrite (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Windows Diagnostic Tools-rewrite (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

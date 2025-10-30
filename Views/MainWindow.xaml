@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="Windows_Diagnostic_Tools_rewrite.Views.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Windows Diagnostic Tools">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
+    <NavigationView PaneDisplayMode="Left"
+                    ItemInvoked="NavigationView_ItemInvoked"
+                    IsBackButtonVisible="Collapsed"
+                    IsSettingsVisible="False">
+
+        <NavigationView.MenuItems>
+            <NavigationViewItem Content="Home" 
+                                Icon="Home" 
+                                Tag="Home"/>
+
+            <NavigationViewItem Content="Network &amp; DNS Reset" 
+                                Icon="Sync" 
+                                Tag="NetworkRepair"/>
+
+            <NavigationViewItem Content="Windows System Repair" 
+                                Icon="Repair" 
+                                Tag="WindowsRepair"/>
+        </NavigationView.MenuItems>
+
+        <Frame x:Name="ContentFrame" 
+               HorizontalAlignment="Stretch"
+               VerticalAlignment="Stretch"/>
+    </NavigationView>
+</Window>
