@@ -1,14 +1,3 @@
-# This workflow will build and publish a WinUI 3 unpackaged desktop application
-# built on .NET 8.
-
-name: Publish Unpackaged EXE
-
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
 jobs:
   build:
     strategy:
@@ -17,9 +6,8 @@ jobs:
         platform: [x64, x86]
 
     runs-on: windows-latest
-
-    env:
-      Solution_Name: Windows Diagnostic Tools-rewrite.sln
+    
+    # The top-level 'env:' block is removed.
 
     steps:
     - name: Checkout
@@ -37,22 +25,20 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.1.3
 
-    # Restore the application to populate the obj folder with RuntimeIdentifiers
-    - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
+    # This step is GONE. 'Publish' handles the restore.
+    # - name: Restore the application
+    #   ...
 
     # Create the app by building and publishing the project
     - name: Create the app (Self-Contained)
-      run: msbuild $env:Solution_Name /t:Publish /p:Configuration=$env:Configuration /p:Platform=$env:Platform /p:WindowsAppSDKSelfContained=true
+      run: msbuild "Windows Diagnostic Tools.csproj" /t:Publish /p:Configuration=$env:Configuration /p:Platform=$env:Platform /p:WindowsAppSDKSelfContained=true /p:WindowsPackageType=None /p:PublishDir=./publish/${{ matrix.platform }}/
       env:
         Configuration: ${{ matrix.configuration }}
         Platform: ${{ matrix.platform }}
 
     # Upload the app
     - name: Upload app
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Unpackaged-EXE-${{ matrix.platform }}
-        path: bin\Release\net8.0-windows10.0.19041.0\${{ matrix.platform }}\publish
+        path: ./publish/${{ matrix.platform }}/
