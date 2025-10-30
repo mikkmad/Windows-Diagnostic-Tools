@@ -1,0 +1,58 @@
+# This workflow will build and publish a WinUI 3 unpackaged desktop application
+# built on .NET 8.
+
+name: Publish Unpackaged EXE
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        configuration: [Release]
+        platform: [x64, x86]
+
+    runs-on: windows-latest
+
+    env:
+      Solution_Name: Windows Diagnostic Tools-rewrite.sln
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    # Install .NET 8
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    # Add MSBuild to the PATH
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v1.1.3
+
+    # Restore the application to populate the obj folder with RuntimeIdentifiers
+    - name: Restore the application
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
+      env:
+        Configuration: ${{ matrix.configuration }}
+
+    # Create the app by building and publishing the project
+    - name: Create the app (Self-Contained)
+      run: msbuild $env:Solution_Name /t:Publish /p:Configuration=$env:Configuration /p:Platform=$env:Platform /p:WindowsAppSDKSelfContained=true
+      env:
+        Configuration: ${{ matrix.configuration }}
+        Platform: ${{ matrix.platform }}
+
+    # Upload the app
+    - name: Upload app
+      uses: actions/upload-artifact@v3
+      with:
+        name: Unpackaged-EXE-${{ matrix.platform }}
+        path: bin\Release\net8.0-windows10.0.19041.0\${{ matrix.platform }}\publish
