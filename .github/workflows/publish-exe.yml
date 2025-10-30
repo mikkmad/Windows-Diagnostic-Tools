@@ -1,3 +1,14 @@
+# name of workflow
+name: Publish Unpackaged EXE
+
+# triggers
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# what to do
 jobs:
   build:
     strategy:
@@ -6,37 +17,30 @@ jobs:
         platform: [x64, x86]
 
     runs-on: windows-latest
-    
-    # The top-level 'env:' block is removed.
-
+ 
     steps:
     - name: Checkout
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
-    # Install .NET 8
+    # install .NET 8.0 (project targets .NET 8.0)
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
 
-    # Add MSBuild to the PATH
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.1.3
 
-    # This step is GONE. 'Publish' handles the restore.
-    # - name: Restore the application
-    #   ...
-
-    # Create the app by building and publishing the project
+    # create the app by building the project file with msbuild
     - name: Create the app (Self-Contained)
       run: msbuild "Windows Diagnostic Tools.csproj" /t:Publish /p:Configuration=$env:Configuration /p:Platform=$env:Platform /p:WindowsAppSDKSelfContained=true /p:WindowsPackageType=None /p:PublishDir=./publish/${{ matrix.platform }}/
       env:
         Configuration: ${{ matrix.configuration }}
         Platform: ${{ matrix.platform }}
 
-    # Upload the app
+    # upload it
     - name: Upload app
       uses: actions/upload-artifact@v4
       with:
