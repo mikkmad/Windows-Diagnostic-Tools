@@ -3,6 +3,7 @@ name: Publish Unpackaged EXE
 
 # triggers
 on:
+  workflow_dispatch: {}
   push:
     tags:
       - 'v*'
