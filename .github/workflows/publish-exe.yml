@@ -4,9 +4,8 @@ name: Publish Unpackaged EXE
 # triggers
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    tags:
+      - 'v*'
 
 # what to do
 jobs:
@@ -27,7 +26,7 @@ jobs:
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 9.0.x
 
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.1.3
@@ -39,10 +38,15 @@ jobs:
     # create the app (self-contained)
     - name: Create the app (Self-Contained)
       run: msbuild "Windows Diagnostic Tools.csproj" /t:Publish /p:Configuration=$env:Configuration /p:RuntimeIdentifier=$env:RID /p:WindowsAppSDKSelfContained=true /p:WindowsPackageType=None /p:EnableMsixTooling=true /p:PublishDir=./publish/$env:RID/
-
-    # upload the app
-    - name: Upload app
-      uses: actions/upload-artifact@v4
+    
+    # zip the app
+    - name: Create Zip File
+      run: Compress-Archive -Path ./publish/win-x64/* -DestinationPath ./publish/Unpackaged-EXE-x64.zip
+      
+    # Create Release
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
       with:
-        name: Unpackaged-EXE-x64
-        path: ./publish/win-x64/
+          files: ./publish/Unpackaged-EXE-x64.zip
+          draft: false
+          prerelease: false
