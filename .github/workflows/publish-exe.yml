@@ -1,12 +1,22 @@
 # name of workflow
-name: Publish Unpackaged EXE
+name: Build and Upload Artifact
 
 # triggers
 on:
-  workflow_dispatch: {}
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
+    inputs:
+        version:
+          description: 'Version Number (e.g., 1.0.1)'
+          required: true
+          default: '1.0.0'
+        configuration:
+          description: 'Build Configuration'
+          required: true
+          default: 'Release'
+          type: choice
+          options:
+          - Release
+          - Debug
 
 # what to do
 jobs:
@@ -15,7 +25,6 @@ jobs:
     
     # values for the build
     env:
-      Configuration: Release
       RID: win-x64
 
     steps:
@@ -34,20 +43,24 @@ jobs:
 
     # restore the project
     - name: Restore the project
-      run: msbuild "Windows Diagnostic Tools.csproj" /t:Restore /p:Configuration=$env:Configuration /p:RuntimeIdentifier=$env:RID
+      run: msbuild "Windows Diagnostic Tools.csproj" /t:Restore /p:Configuration=${{ github.event.inputs.configuration }} /p:RuntimeIdentifier=$env:RID
 
     # create the app (self-contained)
     - name: Create the app (Self-Contained)
-      run: msbuild "Windows Diagnostic Tools.csproj" /t:Publish /p:Configuration=$env:Configuration /p:RuntimeIdentifier=$env:RID /p:WindowsAppSDKSelfContained=true /p:WindowsPackageType=None /p:EnableMsixTooling=true /p:PublishDir=./publish/$env:RID/
+      run: msbuild "Windows Diagnostic Tools.csproj" /t:Publish /p:Configuration=${{ github.event.inputs.configuration }} /p:RuntimeIdentifier=$env:RID /p:WindowsAppSDKSelfContained=true /p:WindowsPackageType=None /p:EnableMsixTooling=true /p:PublishDir=./publish/$env:RID/
     
     # zip the app
-    - name: Create Zip File
-      run: Compress-Archive -Path ./publish/win-x64/* -DestinationPath ./publish/Unpackaged-EXE-x64.zip
+    - name: Create ZIP File
+      run: Compress-Archive -Path ./publish/$env:RID/* -DestinationPath ./publish/Unpackaged-EXE-x64.zip
       
     # Create Release
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v6
       with:
-          files: ./publish/Unpackaged-EXE-x64.zip
-          draft: false
-          prerelease: false
+        name: Windows-Diagnostic-Tools-${{ github.event.inputs.version }}-${{ github.event.inputs.configuration }}-x64 # adds version and configuration, i.e. Windows-Diagnostic-Tools-2.0.1-Release-x64
+        path: ./publish/Unpackaged-EXE-x64.zip
+
+    # Clean up
+    - name: Clean-up
+      if: always() # Ensures this runs even if previous steps failed
+      run: Remove-Item -Path ./publish/ -Recurse -Force
